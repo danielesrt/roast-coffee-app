@@ -2,7 +2,7 @@
   "name": "Roast - Kahve Keşif Uygulaması",
   "short_name": "Roast",
   "description": "Dünya çapında en özel kahveleri keşfedin, damak tadınıza özel öneriler alın",
-  "start_url": "/",
+  "start_url": "/roast-coffee-app/",
   "display": "standalone",
   "background_color": "#F5E6D3",
   "theme_color": "#3E2723",
