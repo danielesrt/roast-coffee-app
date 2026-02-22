@@ -12,19 +12,13 @@
     <title>Roast - Kahve Takip</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         :root {
             --color-espresso: #3E2723;
             --color-espresso-dark: #2C1B18;
             --color-latte: #F5E6D3;
             --color-crema: #C89F6C;
-            --color-forest: #2D5016;
-            --color-white: #FFFFFF;
             --font-display: 'Cormorant', serif;
             --font-body: 'DM Sans', sans-serif;
         }
@@ -33,11 +27,160 @@
             font-family: var(--font-body);
             background: var(--color-latte);
             color: var(--color-espresso);
-            padding-bottom: 72px;
             overflow-x: hidden;
         }
 
-        /* Top Bar */
+        /* Auth Screen */
+        .auth-screen {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--color-espresso) 0%, var(--color-espresso-dark) 100%);
+            padding: 40px 20px;
+        }
+
+        .auth-screen.hidden { display: none; }
+
+        .auth-logo {
+            font-family: var(--font-display);
+            font-size: 64px;
+            font-weight: 700;
+            color: white;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .auth-tagline {
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 60px;
+        }
+
+        .auth-container {
+            background: white;
+            border-radius: 24px;
+            padding: 32px 24px;
+            max-width: 400px;
+            width: 100%;
+            margin: 0 auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+            background: var(--color-latte);
+            padding: 4px;
+            border-radius: 12px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--color-espresso);
+        }
+
+        .auth-tab.active {
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--color-espresso);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--color-latte);
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: var(--font-body);
+            transition: all 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-crema);
+            background: rgba(200, 159, 108, 0.05);
+        }
+
+        .form-error {
+            color: #C62828;
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--color-espresso);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 24px;
+            transition: all 0.2s;
+        }
+
+        .submit-btn:hover {
+            background: var(--color-espresso-dark);
+        }
+
+        .submit-btn:active {
+            transform: scale(0.98);
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 40px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+        }
+
+        /* App Container */
+        .app-container {
+            display: none;
+            padding-bottom: 72px;
+        }
+
+        .app-container.active {
+            display: block;
+        }
+
+        /* Topbar */
         .topbar {
             position: sticky;
             top: 0;
@@ -54,9 +197,13 @@
 
         .logo {
             font-family: var(--font-display);
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
             color: var(--color-espresso);
+        }
+
+        .user-menu {
+            position: relative;
         }
 
         .user-avatar {
@@ -68,14 +215,68 @@
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            color: var(--color-espresso);
+            color: white;
+            cursor: pointer;
         }
 
-        /* Main Content */
+        .user-dropdown {
+            display: none;
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            overflow: hidden;
+        }
+
+        .user-dropdown.show {
+            display: block;
+        }
+
+        .user-info {
+            padding: 16px;
+            border-bottom: 1px solid var(--color-latte);
+        }
+
+        .user-name {
+            font-weight: 600;
+        }
+
+        .user-email {
+            font-size: 13px;
+            color: #757575;
+        }
+
+        .user-dropdown-item {
+            padding: 14px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+
+        .user-dropdown-item:hover {
+            background: var(--color-latte);
+        }
+
+        .logout-btn {
+            color: #C62828;
+            font-weight: 600;
+        }
+
         .container {
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
         }
 
         /* Daily Summary */
@@ -90,8 +291,8 @@
 
         .date-selector {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 24px;
         }
 
@@ -104,19 +305,11 @@
             border-radius: 8px;
             cursor: pointer;
             font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .date-btn:active {
-            background: rgba(255, 255, 255, 0.2);
         }
 
         .current-date {
             font-size: 16px;
             font-weight: 500;
-            opacity: 0.9;
         }
 
         .stats-grid {
@@ -129,7 +322,6 @@
             background: rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 16px;
-            backdrop-filter: blur(10px);
         }
 
         .stat-label {
@@ -163,7 +355,6 @@
             font-family: var(--font-display);
             font-size: 20px;
             margin-bottom: 16px;
-            color: var(--color-espresso);
         }
 
         .coffee-types {
@@ -193,9 +384,8 @@
             margin-bottom: 8px;
         }
 
-        .coffee-name {
+        .coffee-name-btn {
             font-weight: 600;
-            color: var(--color-espresso);
             margin-bottom: 4px;
         }
 
@@ -204,12 +394,11 @@
             color: #757575;
         }
 
-        /* Today's Log */
+        /* Log */
         .todays-log {
             background: white;
             border-radius: 16px;
             padding: 20px;
-            margin-bottom: 24px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
@@ -217,7 +406,6 @@
             font-family: var(--font-display);
             font-size: 20px;
             margin-bottom: 16px;
-            color: var(--color-espresso);
         }
 
         .log-entry {
@@ -233,7 +421,6 @@
         .log-time {
             font-size: 13px;
             font-weight: 600;
-            color: var(--color-espresso);
             min-width: 50px;
         }
 
@@ -243,7 +430,6 @@
 
         .log-coffee-name {
             font-weight: 600;
-            color: var(--color-espresso);
             margin-bottom: 2px;
         }
 
@@ -275,53 +461,8 @@
             opacity: 0.5;
         }
 
-        /* Tab Bar */
-        .tab-bar {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 56px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid rgba(0, 0, 0, 0.06);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding-bottom: env(safe-area-inset-bottom);
-            z-index: 1000;
-        }
-
-        .tab-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            color: #9E9E9E;
-            font-size: 11px;
-            cursor: pointer;
-            padding: 8px 16px;
-            transition: color 0.2s;
-        }
-
-        .tab-item.active {
-            color: var(--color-espresso);
-        }
-
-        .tab-icon {
-            font-size: 22px;
-        }
-
         /* Stats Page */
-        .stats-page {
-            display: none;
-        }
-
-        .stats-page.active {
-            display: block;
-        }
-
-        .week-chart {
+        .chart-container {
             background: white;
             border-radius: 16px;
             padding: 20px;
@@ -333,7 +474,6 @@
             font-family: var(--font-display);
             font-size: 20px;
             margin-bottom: 20px;
-            color: var(--color-espresso);
         }
 
         .chart-bars {
@@ -369,57 +509,19 @@
             transform: translateX(-50%);
             font-size: 12px;
             font-weight: 600;
-            color: var(--color-espresso);
         }
 
         .chart-bar-label {
             font-size: 11px;
             color: #757575;
-            text-align: center;
-        }
-
-        .insights {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 24px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        }
-
-        .insight-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--color-latte);
-            border-radius: 12px;
-            margin-bottom: 12px;
-        }
-
-        .insight-icon {
-            font-size: 24px;
-        }
-
-        .insight-text {
-            flex: 1;
-            font-size: 14px;
-            line-height: 1.5;
         }
 
         /* Settings Page */
-        .settings-page {
-            display: none;
-        }
-
-        .settings-page.active {
-            display: block;
-        }
-
         .settings-section {
             background: white;
             border-radius: 16px;
             padding: 20px;
-            margin-bottom: 24px;
+            margin-bottom: 16px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
 
@@ -427,14 +529,13 @@
             font-family: var(--font-display);
             font-size: 20px;
             margin-bottom: 16px;
-            color: var(--color-espresso);
         }
 
         .setting-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 0;
+            padding: 12px 0;
             border-bottom: 1px solid var(--color-latte);
         }
 
@@ -443,408 +544,505 @@
         }
 
         .setting-label {
+            font-size: 15px;
             font-weight: 500;
         }
 
         .setting-value {
+            font-size: 15px;
             color: #757575;
-            font-size: 14px;
         }
 
-        input[type="number"] {
+        .setting-item input {
             width: 80px;
             padding: 8px;
-            border: 1px solid var(--color-latte);
+            border: 2px solid var(--color-latte);
             border-radius: 8px;
-            font-family: var(--font-body);
-            font-size: 14px;
             text-align: center;
+            font-size: 15px;
         }
 
         .btn-primary {
             width: 100%;
-            padding: 16px;
+            padding: 14px;
             background: var(--color-espresso);
             color: white;
             border: none;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 16px;
+            transition: all 0.2s;
         }
 
         .btn-primary:active {
-            background: var(--color-espresso-dark);
+            transform: scale(0.98);
         }
 
-        /* Modal */
-        .modal {
-            display: none;
+        /* Tab Bar */
+        .tab-bar {
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            display: none;
+            justify-content: space-around;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 1000;
         }
 
-        .modal.active {
+        .tab-bar.active {
             display: flex;
         }
 
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 24px;
-            max-width: 400px;
-            width: 100%;
-            animation: modalSlideUp 0.3s ease-out;
-        }
-
-        @keyframes modalSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .modal-title {
-            font-family: var(--font-display);
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: var(--color-espresso);
-        }
-
-        .modal-buttons {
+        .tab-item {
             display: flex;
-            gap: 12px;
-            margin-top: 20px;
-        }
-
-        .btn-secondary {
-            flex: 1;
-            padding: 12px;
-            background: var(--color-latte);
-            color: var(--color-espresso);
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #9E9E9E;
+            font-size: 11px;
             cursor: pointer;
+            padding: 8px 16px;
+            transition: color 0.2s;
+        }
+
+        .tab-item.active {
+            color: var(--color-espresso);
+        }
+
+        .tab-icon {
+            font-size: 22px;
+        }
+
+        @media (max-width: 768px) {
+            .auth-screen { padding: 20px 16px; }
+            .auth-logo { font-size: 48px; }
+            .container { padding: 16px; }
         }
     </style>
 </head>
 <body>
-    <!-- Top Bar -->
-    <div class="topbar">
-        <div class="logo">Roast</div>
-        <div class="user-avatar">A</div>
-    </div>
-
-    <!-- Home Page -->
-    <div class="container home-page">
-        <!-- Daily Summary -->
-        <div class="daily-summary">
-            <div class="date-selector">
-                <button class="date-btn" onclick="changeDate(-1)">‹</button>
-                <div class="current-date" id="currentDate">Bugün</div>
-                <button class="date-btn" onclick="changeDate(1)">›</button>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Kahve</div>
-                    <div>
-                        <span class="stat-value" id="todayCups">0</span>
-                        <span class="stat-unit">fincan</span>
-                    </div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Kafein</div>
-                    <div>
-                        <span class="stat-value" id="todayCaffeine">0</span>
-                        <span class="stat-unit">/ <span id="caffeineLimit">400</span>mg</span>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Caffeine Progress Bar -->
-            <div style="margin-top: 20px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <div style="font-size: 13px; opacity: 0.9;">Kafein Seviyesi</div>
-                    <div style="font-size: 13px; opacity: 0.9;" id="caffeinePercentage">0%</div>
-                </div>
-                <div style="height: 8px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden;">
-                    <div id="caffeineBar" style="height: 100%; background: #4CAF50; border-radius: 10px; width: 0%; transition: all 0.3s;"></div>
-                </div>
-            </div>
-            
-            <!-- Health Warning -->
-            <div id="healthWarning" style="display: none; margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 12px; border-left: 4px solid #FFC107;">
-                <div style="display: flex; gap: 8px;">
-                    <span style="font-size: 20px;">⚠️</span>
-                    <div style="flex: 1;">
-                        <div style="font-weight: 600; font-size: 14px; margin-bottom: 2px;">Dikkat!</div>
-                        <div style="font-size: 12px; opacity: 0.9;" id="warningText"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Quick Add -->
-        <div class="quick-add">
-            <h3>Hızlı Ekle</h3>
-            <div class="coffee-types">
-                <button class="coffee-btn" onclick="addCoffee('espresso', 80)">
-                    <div class="coffee-icon">☕</div>
-                    <div class="coffee-name">Espresso</div>
-                    <div class="coffee-caffeine">80mg kafein</div>
-                </button>
-                <button class="coffee-btn" onclick="addCoffee('americano', 120)">
-                    <div class="coffee-icon">☕</div>
-                    <div class="coffee-name">Americano</div>
-                    <div class="coffee-caffeine">120mg kafein</div>
-                </button>
-                <button class="coffee-btn" onclick="addCoffee('latte', 75)">
-                    <div class="coffee-icon">🥛</div>
-                    <div class="coffee-name">Latte</div>
-                    <div class="coffee-caffeine">75mg kafein</div>
-                </button>
-                <button class="coffee-btn" onclick="addCoffee('cappuccino', 75)">
-                    <div class="coffee-icon">☕</div>
-                    <div class="coffee-name">Cappuccino</div>
-                    <div class="coffee-caffeine">75mg kafein</div>
-                </button>
-                <button class="coffee-btn" onclick="addCoffee('turkish', 65)">
-                    <div class="coffee-icon">☕</div>
-                    <div class="coffee-name">Türk Kahvesi</div>
-                    <div class="coffee-caffeine">65mg kafein</div>
-                </button>
-                <button class="coffee-btn" onclick="addCoffee('filter', 95)">
-                    <div class="coffee-icon">☕</div>
-                    <div class="coffee-name">Filtre Kahve</div>
-                    <div class="coffee-caffeine">95mg kafein</div>
-                </button>
-            </div>
-        </div>
-
-        <!-- Today's Log -->
-        <div class="todays-log">
-            <h3>Bugünün Kaydı</h3>
-            <div id="todaysLog">
-                <div class="empty-state">
-                    <div class="empty-state-icon">☕</div>
-                    <div>Henüz kahve eklemediniz</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Stats Page -->
-    <div class="container stats-page">
-        <div class="week-chart">
-            <h3 class="chart-title">Bu Hafta</h3>
-            <div class="chart-bars" id="weekChart"></div>
-        </div>
-
-        <div class="insights">
-            <h3 class="chart-title">İçgörüler</h3>
-            <div id="insightsList"></div>
-        </div>
-    </div>
-
-    <!-- Settings Page -->
-    <div class="container settings-page">
-        <div class="settings-section">
-            <h3>Sağlık Ayarları</h3>
-            <div class="setting-item">
-                <span class="setting-label">Günlük kafein limiti (mg)</span>
-                <input type="number" id="maxCaffeine" value="400" min="100" max="800" step="50">
-            </div>
-            <div style="font-size: 13px; color: #757575; margin-top: 8px; padding: 0 16px;">
-                FDA önerisi: Sağlıklı yetişkinler için günde 400mg
-            </div>
-        </div>
+    <!-- Auth Screen -->
+    <div class="auth-screen">
+        <div class="auth-logo">Roast</div>
+        <div class="auth-tagline">Kahve yolculuğunuz burada başlıyor</div>
         
-        <div class="settings-section">
-            <h3>💡 Sağlık Bilgisi</h3>
-            <div style="font-size: 14px; line-height: 1.8; color: #757575; padding: 0 16px;">
-                • <strong>400mg/gün:</strong> Sağlıklı yetişkinler için güvenli üst limit<br>
-                • <strong>200mg/gün:</strong> Hamile kadınlar için önerilen maksimum<br>
-                • <strong>100mg/gün:</strong> Kafeinden hassaslar için önerilen<br>
-                <br>
-                <strong>Aşırı kafein yan etkileri:</strong><br>
-                Uyku bozukluğu, kaygı, kalp çarpıntısı, baş ağrısı, titreme
+        <div class="auth-container">
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchAuthTab('login')">Giriş Yap</button>
+                <button class="auth-tab" onclick="switchAuthTab('register')">Kayıt Ol</button>
             </div>
+
+            <!-- Login Form -->
+            <form class="auth-form active" id="loginForm" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label class="form-label">E-posta</label>
+                    <input type="email" class="form-input" id="loginEmail" placeholder="ornek@email.com" required>
+                    <div class="form-error" id="loginEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Şifre</label>
+                    <input type="password" class="form-input" id="loginPassword" placeholder="••••••••" required>
+                    <div class="form-error" id="loginPasswordError"></div>
+                </div>
+                <button type="submit" class="submit-btn">Giriş Yap</button>
+            </form>
+
+            <!-- Register Form -->
+            <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label class="form-label">Ad Soyad</label>
+                    <input type="text" class="form-input" id="registerName" placeholder="Ahmet Yılmaz" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">E-posta</label>
+                    <input type="email" class="form-input" id="registerEmail" placeholder="ornek@email.com" required>
+                    <div class="form-error" id="registerEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Şifre</label>
+                    <input type="password" class="form-input" id="registerPassword" placeholder="En az 6 karakter" required minlength="6">
+                    <div class="form-error" id="registerPasswordError"></div>
+                </div>
+                <button type="submit" class="submit-btn">Kayıt Ol</button>
+            </form>
         </div>
 
-        <div class="settings-section">
-            <h3>⏰ En İyi İçme Zamanı</h3>
-            <div style="font-size: 14px; line-height: 1.8; color: #757575; padding: 0 16px;">
-                • <strong>Sabah:</strong> 9:30-11:30 (kortizol seviyesi düştükten sonra)<br>
-                • <strong>Öğleden sonra:</strong> 13:00-15:00<br>
-                • <strong>Son kahve:</strong> Yatmadan 6 saat önce<br>
-                • <strong>Kafein yarı ömrü:</strong> 5-6 saat
-            </div>
-        </div>
-        
-        <div class="settings-section">
-            <h3>Hedefler</h3>
-            <div class="setting-item">
-                <span class="setting-label">Günlük hedef</span>
-                <input type="number" id="dailyGoal" value="3" min="1" max="10">
-            </div>
-        </div>
-
-        <div class="settings-section">
-            <h3>Veriler</h3>
-            <button class="btn-primary" onclick="exportData()">Verileri Dışa Aktar</button>
-            <button class="btn-primary" style="background: #C62828; margin-top: 12px;" onclick="confirmReset()">Tüm Verileri Sil</button>
-        </div>
-
-        <div class="settings-section">
-            <h3>Hakkında</h3>
-            <div class="setting-item">
-                <span class="setting-label">Versiyon</span>
-                <span class="setting-value">2.0.0</span>
-            </div>
-            <div class="setting-item">
-                <span class="setting-label">Toplam kayıt</span>
-                <span class="setting-value" id="totalEntries">0</span>
-            </div>
+        <div class="auth-footer">
+            © 2026 Roast. Tüm hakları saklıdır.
         </div>
     </div>
 
-    <!-- Tab Bar -->
-    <div class="tab-bar">
-        <div class="tab-item active" onclick="switchTab('home')">
-            <div class="tab-icon">🏠</div>
-            <div>Ana Sayfa</div>
+    <!-- App Container -->
+    <div class="app-container">
+        <div class="topbar">
+            <div class="logo">Roast</div>
+            <div class="user-menu">
+                <div class="user-avatar" onclick="toggleUserMenu()" id="userAvatar">K</div>
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="user-info">
+                        <div class="user-name" id="userName">Kullanıcı</div>
+                        <div class="user-email" id="userEmail">user@example.com</div>
+                    </div>
+                    <div class="user-dropdown-item logout-btn" onclick="handleLogout()">Çıkış Yap</div>
+                </div>
+            </div>
         </div>
-        <div class="tab-item" onclick="switchTab('stats')">
-            <div class="tab-icon">📊</div>
-            <div>İstatistik</div>
-        </div>
-        <div class="tab-item" onclick="switchTab('settings')">
-            <div class="tab-icon">⚙️</div>
-            <div>Ayarlar</div>
-        </div>
-    </div>
 
-    <!-- Reset Confirmation Modal -->
-    <div class="modal" id="resetModal">
-        <div class="modal-content">
-            <h3 class="modal-title">Tüm Verileri Sil?</h3>
-            <p>Bu işlem geri alınamaz. Tüm kahve kayıtlarınız silinecek.</p>
-            <div class="modal-buttons">
-                <button class="btn-secondary" onclick="closeModal()">İptal</button>
-                <button class="btn-primary" style="background: #C62828;" onclick="resetAllData()">Sil</button>
+        <!-- Home Page -->
+        <div class="page home-page active">
+            <div class="container">
+                <div class="daily-summary">
+                    <div class="date-selector">
+                        <button class="date-btn" onclick="changeDate(-1)">‹</button>
+                        <div class="current-date" id="currentDate">Bugün</div>
+                        <button class="date-btn" onclick="changeDate(1)">›</button>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Kahve</div>
+                            <div><span class="stat-value" id="todayCups">0</span><span class="stat-unit">fincan</span></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Kafein</div>
+                            <div><span class="stat-value" id="todayCaffeine">0</span><span class="stat-unit">/ <span id="caffeineLimit">400</span>mg</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Caffeine Progress Bar -->
+                    <div style="margin-top: 20px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <div style="font-size: 13px; opacity: 0.9;">Kafein Seviyesi</div>
+                            <div style="font-size: 13px; opacity: 0.9;" id="caffeinePercentage">0%</div>
+                        </div>
+                        <div style="height: 8px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow: hidden;">
+                            <div id="caffeineBar" style="height: 100%; background: #4CAF50; border-radius: 10px; width: 0%; transition: all 0.3s;"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Health Warning -->
+                    <div id="healthWarning" style="display: none; margin-top: 16px; padding: 12px; background: rgba(255,255,255,0.15); border-radius: 12px; border-left: 4px solid #FFC107;">
+                        <div style="display: flex; gap: 8px;">
+                            <span style="font-size: 20px;">⚠️</span>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 600; font-size: 14px; margin-bottom: 2px;">Dikkat!</div>
+                                <div style="font-size: 12px; opacity: 0.9;" id="warningText"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-add">
+                    <h3>Hızlı Ekle</h3>
+                    <div class="coffee-types">
+                        <button class="coffee-btn" onclick="addCoffee('espresso', 80)">
+                            <div class="coffee-icon">☕</div>
+                            <div class="coffee-name-btn">Espresso</div>
+                            <div class="coffee-caffeine">80mg kafein</div>
+                        </button>
+                        <button class="coffee-btn" onclick="addCoffee('americano', 120)">
+                            <div class="coffee-icon">☕</div>
+                            <div class="coffee-name-btn">Americano</div>
+                            <div class="coffee-caffeine">120mg kafein</div>
+                        </button>
+                        <button class="coffee-btn" onclick="addCoffee('latte', 75)">
+                            <div class="coffee-icon">🥛</div>
+                            <div class="coffee-name-btn">Latte</div>
+                            <div class="coffee-caffeine">75mg kafein</div>
+                        </button>
+                        <button class="coffee-btn" onclick="addCoffee('cappuccino', 75)">
+                            <div class="coffee-icon">☕</div>
+                            <div class="coffee-name-btn">Cappuccino</div>
+                            <div class="coffee-caffeine">75mg kafein</div>
+                        </button>
+                        <button class="coffee-btn" onclick="addCoffee('turkish', 65)">
+                            <div class="coffee-icon">☕</div>
+                            <div class="coffee-name-btn">Türk Kahvesi</div>
+                            <div class="coffee-caffeine">65mg kafein</div>
+                        </button>
+                        <button class="coffee-btn" onclick="addCoffee('filter', 95)">
+                            <div class="coffee-icon">☕</div>
+                            <div class="coffee-name-btn">Filtre Kahve</div>
+                            <div class="coffee-caffeine">95mg kafein</div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="todays-log">
+                    <h3>Bugünün Kaydı</h3>
+                    <div id="todaysLog">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">☕</div>
+                            <div>Henüz kahve eklemediniz</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Page -->
+        <div class="page stats-page">
+            <div class="container">
+                <div class="chart-container">
+                    <h3 class="chart-title">Bu Hafta</h3>
+                    <div class="chart-bars" id="weekChart"></div>
+                </div>
+
+                <div class="quick-add">
+                    <h3>İstatistikler</h3>
+                    <div id="statsInfo"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div class="page settings-page">
+            <div class="container">
+                <div class="settings-section">
+                    <h3>Sağlık Ayarları</h3>
+                    <div class="setting-item">
+                        <span class="setting-label">Günlük kafein limiti (mg)</span>
+                        <input type="number" id="maxCaffeine" value="400" min="100" max="800" step="50" onchange="updateSettings()">
+                    </div>
+                    <div style="font-size: 13px; color: #757575; margin-top: 8px;">
+                        FDA önerisi: Sağlıklı yetişkinler için günde 400mg
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>💡 Sağlık Bilgisi</h3>
+                    <div style="font-size: 14px; line-height: 1.8; color: #757575;">
+                        • <strong>400mg/gün:</strong> Sağlıklı yetişkinler için güvenli üst limit<br>
+                        • <strong>200mg/gün:</strong> Hamile kadınlar için önerilen maksimum<br>
+                        • <strong>100mg/gün:</strong> Kafeinden hassaslar için önerilen<br>
+                        <br>
+                        <strong>Aşırı kafein yan etkileri:</strong><br>
+                        Uyku bozukluğu, kaygı, kalp çarpıntısı, baş ağrısı, titreme
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>⏰ En İyi İçme Zamanı</h3>
+                    <div style="font-size: 14px; line-height: 1.8; color: #757575;">
+                        • <strong>Sabah:</strong> 9:30-11:30 (kortizol seviyesi düştükten sonra)<br>
+                        • <strong>Öğleden sonra:</strong> 13:00-15:00<br>
+                        • <strong>Son kahve:</strong> Yatmadan 6 saat önce<br>
+                        • <strong>Kafein yarı ömrü:</strong> 5-6 saat
+                    </div>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Hesap</h3>
+                    <div class="setting-item">
+                        <span class="setting-label" id="settingsUserName">Kullanıcı</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label" style="font-size: 13px; color: #757575;" id="settingsUserEmail">user@example.com</span>
+                    </div>
+                    <button class="btn-primary" style="background: #C62828; margin-top: 16px;" onclick="handleLogout()">Çıkış Yap</button>
+                </div>
+
+                <div class="settings-section">
+                    <h3>Hakkında</h3>
+                    <div class="setting-item">
+                        <span class="setting-label">Versiyon</span>
+                        <span class="setting-value">2.0.0</span>
+                    </div>
+                    <div class="setting-item">
+                        <span class="setting-label">Toplam kayıt</span>
+                        <span class="setting-value" id="totalEntries">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+            <div class="tab-item active" onclick="switchTab('home')">
+                <div class="tab-icon">🏠</div>
+                <div>Ana Sayfa</div>
+            </div>
+            <div class="tab-item" onclick="switchTab('stats')">
+                <div class="tab-icon">📊</div>
+                <div>İstatistik</div>
+            </div>
+            <div class="tab-item" onclick="switchTab('settings')">
+                <div class="tab-icon">⚙️</div>
+                <div>Ayarlar</div>
             </div>
         </div>
     </div>
 
     <script>
-        // Data Structure
-        let data = {
-            entries: [],
-            settings: {
-                dailyGoal: 3,
-                maxCaffeine: 400
-            }
-        };
-
+        // State
+        let currentUser = null;
+        let userData = {};
         let currentDate = new Date();
-
-        // Coffee Names in Turkish
-        const coffeeNames = {
-            espresso: 'Espresso',
-            americano: 'Americano',
-            latte: 'Latte',
-            cappuccino: 'Cappuccino',
-            turkish: 'Türk Kahvesi',
-            filter: 'Filtre Kahve'
-        };
+        const coffeeNames = { espresso: 'Espresso', americano: 'Americano', latte: 'Latte', cappuccino: 'Cappuccino', turkish: 'Türk Kahvesi', filter: 'Filtre Kahve' };
 
         // Initialize
+        window.addEventListener('load', () => {
+            checkAuth();
+        });
+
+        // Auth Functions
+        function checkAuth() {
+            const user = localStorage.getItem('roastCurrentUser');
+            if (user) {
+                currentUser = JSON.parse(user);
+                showApp();
+            }
+        }
+
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            document.getElementById(tab === 'login' ? 'loginForm' : 'registerForm').classList.add('active');
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            
+            const users = JSON.parse(localStorage.getItem('roastUsers') || '{}');
+            if (users[email]) {
+                showError('registerEmailError', 'Bu e-posta zaten kayıtlı');
+                return;
+            }
+            
+            users[email] = { name, email, password, createdAt: new Date().toISOString() };
+            localStorage.setItem('roastUsers', JSON.stringify(users));
+            
+            currentUser = { email, name };
+            localStorage.setItem('roastCurrentUser', JSON.stringify(currentUser));
+            
+            showApp();
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const users = JSON.parse(localStorage.getItem('roastUsers') || '{}');
+            const user = users[email];
+            
+            if (!user) {
+                showError('loginEmailError', 'Kullanıcı bulunamadı');
+                return;
+            }
+            
+            if (user.password !== password) {
+                showError('loginPasswordError', 'Şifre hatalı');
+                return;
+            }
+            
+            currentUser = { email: user.email, name: user.name };
+            localStorage.setItem('roastCurrentUser', JSON.stringify(currentUser));
+            
+            showApp();
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('roastCurrentUser');
+            currentUser = null;
+            location.reload();
+        }
+
+        function showError(id, message) {
+            const el = document.getElementById(id);
+            el.textContent = message;
+            el.classList.add('show');
+            setTimeout(() => el.classList.remove('show'), 3000);
+        }
+
+        function showApp() {
+            document.querySelector('.auth-screen').classList.add('hidden');
+            document.querySelector('.app-container').classList.add('active');
+            document.querySelector('.tab-bar').classList.add('active');
+            
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userEmail').textContent = currentUser.email;
+            document.getElementById('userAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+            document.getElementById('settingsUserName').textContent = currentUser.name;
+            document.getElementById('settingsUserEmail').textContent = currentUser.email;
+            
+            init();
+        }
+
+        function toggleUserMenu() {
+            document.getElementById('userDropdown').classList.toggle('show');
+        }
+
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.user-menu')) {
+                document.getElementById('userDropdown').classList.remove('show');
+            }
+        });
+
+        // App Functions
         function init() {
-            loadData();
+            loadUserData();
             updateDisplay();
-            updateStats();
             updateSettings();
         }
 
-        // Load data from localStorage
-        function loadData() {
-            const saved = localStorage.getItem('roastData');
+        function loadUserData() {
+            const key = `roastData_${currentUser.email}`;
+            const saved = localStorage.getItem(key);
             if (saved) {
-                data = JSON.parse(saved);
+                userData = JSON.parse(saved);
+            } else {
+                userData = { entries: [], settings: { maxCaffeine: 400 } };
             }
         }
 
-        // Save data to localStorage
-        function saveData() {
-            localStorage.setItem('roastData', JSON.stringify(data));
+        function saveUserData() {
+            const key = `roastData_${currentUser.email}`;
+            localStorage.setItem(key, JSON.stringify(userData));
         }
 
-        // Add coffee entry
         function addCoffee(type, caffeine) {
-            const entry = {
+            userData.entries.push({
                 id: Date.now(),
-                type: type,
-                caffeine: caffeine,
+                type,
+                caffeine,
                 timestamp: new Date().toISOString(),
                 date: formatDate(currentDate)
-            };
-            
-            data.entries.push(entry);
-            saveData();
+            });
+            saveUserData();
             updateDisplay();
-            updateStats();
-            
-            // Animation feedback
-            const btn = event.target.closest('.coffee-btn');
-            btn.style.transform = 'scale(0.9)';
-            setTimeout(() => {
-                btn.style.transform = 'scale(1)';
-            }, 100);
+            event.target.closest('.coffee-btn').style.transform = 'scale(0.9)';
+            setTimeout(() => event.target.closest('.coffee-btn').style.transform = 'scale(1)', 100);
         }
 
-        // Delete entry
         function deleteEntry(id) {
-            data.entries = data.entries.filter(e => e.id !== id);
-            saveData();
+            userData.entries = userData.entries.filter(e => e.id !== id);
+            saveUserData();
             updateDisplay();
-            updateStats();
         }
 
-        // Get today's entries
-        function getTodayEntries() {
-            const dateStr = formatDate(currentDate);
-            return data.entries.filter(e => e.date === dateStr);
-        }
-
-        // Update display
         function updateDisplay() {
-            const entries = getTodayEntries();
-            
-            // Update stats
+            const entries = userData.entries.filter(e => e.date === formatDate(currentDate));
             const cups = entries.length;
             const caffeine = entries.reduce((sum, e) => sum + e.caffeine, 0);
             
             document.getElementById('todayCups').textContent = cups;
             document.getElementById('todayCaffeine').textContent = caffeine;
             
-            // Caffeine limit & progress bar
-            const limit = data.settings?.maxCaffeine || 400;
+            const limit = userData.settings?.maxCaffeine || 400;
             document.getElementById('caffeineLimit').textContent = limit;
             
             const percentage = Math.min((caffeine / limit) * 100, 100);
@@ -853,72 +1051,65 @@
             const bar = document.getElementById('caffeineBar');
             bar.style.width = percentage + '%';
             
-            // Color coding
             if (percentage < 50) {
-                bar.style.background = '#4CAF50'; // Green
+                bar.style.background = '#4CAF50';
             } else if (percentage < 80) {
-                bar.style.background = '#FFC107'; // Yellow
+                bar.style.background = '#FFC107';
             } else {
-                bar.style.background = '#F44336'; // Red
+                bar.style.background = '#F44336';
             }
             
-            // Health warnings
             const warningDiv = document.getElementById('healthWarning');
             const warningText = document.getElementById('warningText');
             
             if (caffeine >= limit) {
                 warningDiv.style.display = 'block';
                 warningDiv.style.borderColor = '#F44336';
-                warningText.textContent = `Günlük kafein limitini aştınız! (${caffeine}mg / ${limit}mg) Daha fazla kahve içmemeniz şiddetle önerilir.`;
+                warningText.textContent = `Günlük kafein limitini aştınız! (${caffeine}mg / ${limit}mg)`;
             } else if (caffeine >= limit * 0.8) {
                 warningDiv.style.display = 'block';
                 warningDiv.style.borderColor = '#FFC107';
-                warningText.textContent = `Kafein limitine yaklaştınız! Bugün için ${limit - caffeine}mg kafein hakkınız kaldı.`;
+                warningText.textContent = `Limite yaklaştınız. ${limit - caffeine}mg hakkınız kaldı.`;
             } else if (caffeine >= limit * 0.5) {
                 warningDiv.style.display = 'block';
                 warningDiv.style.borderColor = '#2196F3';
-                warningText.textContent = `Günlük kafeinin yarısını tükettiniz. Dengeli tüketim için ${limit - caffeine}mg daha içebilirsiniz.`;
+                warningText.textContent = `Günlük kafeinin yarısını tükettiniz. ${limit - caffeine}mg daha içebilirsiniz.`;
             } else {
                 warningDiv.style.display = 'none';
             }
             
-            // Update date
-            updateDateDisplay();
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const current = new Date(currentDate);
+            current.setHours(0,0,0,0);
+            const diff = Math.floor((today - current) / 86400000);
+            document.getElementById('currentDate').textContent = diff === 0 ? 'Bugün' : diff === 1 ? 'Dün' : diff === -1 ? 'Yarın' : formatDateLong(currentDate);
             
-            // Update log
             const logEl = document.getElementById('todaysLog');
             if (entries.length === 0) {
-                logEl.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">☕</div>
-                        <div>Henüz kahve eklemediniz</div>
-                    </div>
-                `;
+                logEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">☕</div><div>Henüz kahve eklemediniz</div></div>';
             } else {
-                logEl.innerHTML = entries
-                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-                    .map(e => `
-                        <div class="log-entry">
-                            <div class="log-time">${formatTime(new Date(e.timestamp))}</div>
-                            <div class="log-details">
-                                <div class="log-coffee-name">${coffeeNames[e.type]}</div>
-                                <div class="log-caffeine">${e.caffeine}mg kafein</div>
-                            </div>
-                            <button class="delete-btn" onclick="deleteEntry(${e.id})">×</button>
+                logEl.innerHTML = entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).map(e => `
+                    <div class="log-entry">
+                        <div class="log-time">${new Date(e.timestamp).toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'})}</div>
+                        <div class="log-details">
+                            <div class="log-coffee-name">${coffeeNames[e.type]}</div>
+                            <div class="log-caffeine">${e.caffeine}mg kafein</div>
                         </div>
-                    `).join('');
+                        <button class="delete-btn" onclick="deleteEntry(${e.id})">×</button>
+                    </div>
+                `).join('');
             }
+            
+            updateStats();
         }
 
-        // Update stats page
+        function changeDate(delta) {
+            currentDate.setDate(currentDate.getDate() + delta);
+            updateDisplay();
+        }
+
         function updateStats() {
-            updateWeekChart();
-            updateInsights();
-        }
-
-        // Update week chart
-        function updateWeekChart() {
-            const chartEl = document.getElementById('weekChart');
             const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
             const today = new Date();
             const weekData = [];
@@ -927,18 +1118,12 @@
                 const date = new Date(today);
                 date.setDate(date.getDate() - i);
                 const dateStr = formatDate(date);
-                const entries = data.entries.filter(e => e.date === dateStr);
-                const cups = entries.length;
-                
-                weekData.push({
-                    day: days[date.getDay()],
-                    cups: cups
-                });
+                const entries = userData.entries.filter(e => e.date === dateStr);
+                weekData.push({ day: days[date.getDay()], cups: entries.length });
             }
 
             const maxCups = Math.max(...weekData.map(d => d.cups), 1);
-
-            chartEl.innerHTML = weekData.map(d => `
+            document.getElementById('weekChart').innerHTML = weekData.map(d => `
                 <div class="chart-bar-wrapper">
                     <div class="chart-bar" style="height: ${(d.cups / maxCups) * 100}%">
                         ${d.cups > 0 ? `<div class="chart-bar-value">${d.cups}</div>` : ''}
@@ -946,93 +1131,52 @@
                     <div class="chart-bar-label">${d.day}</div>
                 </div>
             `).join('');
-        }
 
-        // Update insights
-        function updateInsights() {
-            const insightsEl = document.getElementById('insightsList');
-            const totalEntries = data.entries.length;
+            const totalEntries = userData.entries.length;
             const avgPerDay = totalEntries > 0 ? (totalEntries / 7).toFixed(1) : 0;
-            const totalCaffeine = data.entries.reduce((sum, e) => sum + e.caffeine, 0);
+            const totalCaffeine = userData.entries.reduce((sum, e) => sum + e.caffeine, 0);
             
-            const insights = [
-                {
-                    icon: '📈',
-                    text: `Günlük ortalamanız ${avgPerDay} fincan kahve`
-                },
-                {
-                    icon: '☕',
-                    text: `Toplam ${totalEntries} fincan kahve içtiniz`
-                },
-                {
-                    icon: '⚡',
-                    text: `Toplam ${totalCaffeine}mg kafein tükettiniz`
-                }
-            ];
-
-            insightsEl.innerHTML = insights.map(i => `
-                <div class="insight-item">
-                    <div class="insight-icon">${i.icon}</div>
-                    <div class="insight-text">${i.text}</div>
+            document.getElementById('totalEntries').textContent = totalEntries;
+            document.getElementById('statsInfo').innerHTML = `
+                <div style="padding: 16px; background: var(--color-latte); border-radius: 12px; margin-bottom: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">Günlük Ortalama</div>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--color-espresso);">${avgPerDay} fincan</div>
                 </div>
-            `).join('');
+                <div style="padding: 16px; background: var(--color-latte); border-radius: 12px; margin-bottom: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">Toplam Kahve</div>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--color-espresso);">${totalEntries} fincan</div>
+                </div>
+                <div style="padding: 16px; background: var(--color-latte); border-radius: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">Toplam Kafein</div>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--color-espresso);">${totalCaffeine}mg</div>
+                </div>
+            `;
         }
 
-        // Update settings
         function updateSettings() {
-            document.getElementById('dailyGoal').value = data.settings.dailyGoal;
-            document.getElementById('maxCaffeine').value = data.settings.maxCaffeine;
-            document.getElementById('totalEntries').textContent = data.entries.length;
-            
-            // Save on change
-            document.getElementById('dailyGoal').addEventListener('change', (e) => {
-                data.settings.dailyGoal = parseInt(e.target.value);
-                saveData();
-            });
-            
-            document.getElementById('maxCaffeine').addEventListener('change', (e) => {
-                data.settings.maxCaffeine = parseInt(e.target.value);
-                saveData();
-            });
+            const limit = userData.settings?.maxCaffeine || 400;
+            document.getElementById('maxCaffeine').value = limit;
         }
 
-        // Switch tab
         function switchTab(tab) {
             document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
             event.target.closest('.tab-item').classList.add('active');
             
-            document.querySelector('.home-page').style.display = tab === 'home' ? 'block' : 'none';
-            document.querySelector('.stats-page').classList.toggle('active', tab === 'stats');
-            document.querySelector('.settings-page').classList.toggle('active', tab === 'settings');
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelector(`.${tab}-page`).classList.add('active');
             
             if (tab === 'stats') updateStats();
             if (tab === 'settings') updateSettings();
         }
 
-        // Date navigation
-        function changeDate(delta) {
-            currentDate.setDate(currentDate.getDate() + delta);
+        // Settings update
+        document.getElementById('maxCaffeine').addEventListener('change', function() {
+            userData.settings = userData.settings || {};
+            userData.settings.maxCaffeine = parseInt(this.value);
+            saveUserData();
             updateDisplay();
-        }
+        });
 
-        function updateDateDisplay() {
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const current = new Date(currentDate);
-            current.setHours(0, 0, 0, 0);
-            
-            const diff = Math.floor((today - current) / (1000 * 60 * 60 * 24));
-            
-            let dateText;
-            if (diff === 0) dateText = 'Bugün';
-            else if (diff === 1) dateText = 'Dün';
-            else if (diff === -1) dateText = 'Yarın';
-            else dateText = formatDateLong(currentDate);
-            
-            document.getElementById('currentDate').textContent = dateText;
-        }
-
-        // Utility functions
         function formatDate(date) {
             return date.toISOString().split('T')[0];
         }
@@ -1041,49 +1185,6 @@
             const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
             return `${date.getDate()} ${months[date.getMonth()]}`;
         }
-
-        function formatTime(date) {
-            return date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-        }
-
-        // Export data
-        function exportData() {
-            const dataStr = JSON.stringify(data, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `roast-data-${formatDate(new Date())}.json`;
-            a.click();
-        }
-
-        // Reset data
-        function confirmReset() {
-            document.getElementById('resetModal').classList.add('active');
-        }
-
-        function closeModal() {
-            document.getElementById('resetModal').classList.remove('active');
-        }
-
-        function resetAllData() {
-            data = {
-                entries: [],
-                settings: {
-                    dailyGoal: 3,
-                    maxCaffeine: 400
-                }
-            };
-            saveData();
-            updateDisplay();
-            updateStats();
-            updateSettings();
-            closeModal();
-        }
-
-        // Initialize app
-        init();
     </script>
 </body>
 </html>
-           
