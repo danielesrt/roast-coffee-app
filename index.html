@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#3E2723">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Roast">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Roast - Kahve Keşif ve Takip</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --color-espresso: #3E2723;
+            --color-espresso-dark: #2C1B18;
+            --color-latte: #F5E6D3;
+            --color-crema: #C89F6C;
+            --font-display: 'Cormorant', serif;
+            --font-body: 'DM Sans', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-latte);
+            color: var(--color-espresso);
+            overflow-x: hidden;
+        }
+
+        /* Common Styles */
+        .topbar {
+            position: sticky;
+            top: 0;
+            height: 64px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(62, 39, 35, 0.08);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .logo {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--color-espresso);
+        }
+
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--color-espresso);
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+
+        /* Landing Page */
+        .landing-page { display: block; }
+        .landing-page.hidden { display: none; }
+
+        .hero {
+            position: relative;
+            height: 600px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .hero-background {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 30% 50%, rgba(200, 159, 108, 0.15) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 50%, rgba(45, 80, 22, 0.08) 0%, transparent 50%);
+        }
+
+        .hero-content {
+            position: relative;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 32px;
+            width: 100%;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 72px;
+            font-weight: 700;
+            line-height: 1.1;
+            color: var(--color-espresso);
+            margin-bottom: 24px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: #757575;
+            max-width: 500px;
+            line-height: 1.6;
+            margin-bottom: 48px;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 32px;
+            background: var(--color-espresso);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 16px rgba(62, 39, 35, 0.2);
+            transition: all 0.2s;
+        }
+
+        .hero-cta:hover {
+            background: var(--color-espresso-dark);
+            transform: translateY(-2px);
+        }
+
+        /* App Container */
+        .app-container {
+            display: none;
+        }
+
+        .app-container.active {
+            display: block;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Home Page (Tracking) */
+        .daily-summary {
+            background: linear-gradient(135deg, var(--color-espresso), var(--color-espresso-dark));
+            border-radius: 20px;
+            padding: 32px 24px;
+            color: white;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 24px rgba(62, 39, 35, 0.2);
+        }
+
+        .date-selector {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .date-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .current-date {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: var(--font-display);
+        }
+
+        .stat-unit {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-left: 4px;
+        }
+
+        .quick-add {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .quick-add h3 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .coffee-types {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .coffee-btn {
+            border: 2px solid var(--color-latte);
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .coffee-btn:active {
+            transform: scale(0.97);
+            border-color: var(--color-crema);
+            background: var(--color-latte);
+        }
+
+        .coffee-icon {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .coffee-name-btn {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .coffee-caffeine {
+            font-size: 12px;
+            color: #757575;
+        }
+
+        .todays-log {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .todays-log h3 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+
+        .log-entry {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--color-latte);
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .log-time {
+            font-size: 13px;
+            font-weight: 600;
+            min-width: 50px;
+        }
+
+        .log-details {
+            flex: 1;
+        }
+
+        .log-coffee-name {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .log-caffeine {
+            font-size: 12px;
+            color: #757575;
+        }
+
+        .delete-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: rgba(198, 40, 40, 0.1);
+            color: #C62828;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9E9E9E;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* Discover Page */
+        .search-bar {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .search-bar input {
+            flex: 1;
+            border: none;
+            font-size: 15px;
+            outline: none;
+            font-family: var(--font-body);
+        }
+
+        .filter-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .filter-tag {
+            padding: 8px 16px;
+            background: white;
+            border: 2px solid var(--color-latte);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-tag.active {
+            background: var(--color-espresso);
+            color: white;
+            border-color: var(--color-espresso);
+        }
+
+        .coffee-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .coffee-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .coffee-card:active {
+            transform: scale(0.98);
+        }
+
+        .coffee-card-horizontal {
+            display: flex;
+            height: 120px;
+        }
+
+        .coffee-image-small {
+            width: 120px;
+            background: linear-gradient(135deg, var(--color-crema), var(--color-espresso-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        .coffee-info {
+            padding: 16px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .coffee-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .coffee-name {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .coffee-origin {
+            font-size: 13px;
+            color: #757575;
+            margin-bottom: 8px;
+        }
+
+        .coffee-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .coffee-tag {
+            font-size: 11px;
+            padding: 4px 8px;
+            background: var(--color-latte);
+            border-radius: 4px;
+            color: var(--color-espresso);
+        }
+
+        .coffee-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--color-espresso);
+        }
+
+        .coffee-rating {
+            font-size: 13px;
+            color: var(--color-crema);
+        }
+
+        /* Coffee Detail Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalSlideUp 0.3s ease-out;
+        }
+
+        @keyframes modalSlideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 20px;
+            border-bottom: 1px solid var(--color-latte);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--color-latte);
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--color-espresso);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .coffee-detail-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, var(--color-crema), var(--color-espresso-dark));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            margin-bottom: 24px;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-section h3 {
+            font-family: var(--font-display);
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .detail-section p {
+            line-height: 1.6;
+            color: #757575;
+        }
+
+        .flavor-notes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .flavor-note {
+            padding: 8px 16px;
+            background: var(--color-latte);
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .brew-method {
+            background: var(--color-latte);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .brew-method h4 {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .brew-method p {
+            font-size: 14px;
+            color: #757575;
+            line-height: 1.5;
+        }
+
+        /* Stats Page */
+        .week-chart {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .chart-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 180px;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .chart-bar-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .chart-bar {
+            width: 100%;
+            background: var(--color-crema);
+            border-radius: 6px 6px 0 0;
+            min-height: 4px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .chart-bar-value {
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .chart-bar-label {
+            font-size: 11px;
+            color: #757575;
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 56px;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 1000;
+        }
+
+        .tab-bar.active {
+            display: flex;
+        }
+
+        .tab-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #9E9E9E;
+            font-size: 11px;
+            cursor: pointer;
+            padding: 8px 16px;
+            transition: color 0.2s;
+        }
+
+        .tab-item.active {
+            color: var(--color-espresso);
+        }
+
+        .tab-icon {
+            font-size: 22px;
+        }
+
+        @media (max-width: 768px) {
+            .hero { height: 500px; }
+            .hero-content { padding: 0 16px; }
+            .hero-title { font-size: 48px; }
+            .container { padding: 16px; padding-bottom: 80px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Landing Page -->
+    <div class="landing-page">
+        <div class="topbar">
+            <div class="logo">Roast</div>
+        </div>
+
+        <section class="hero">
+            <div class="hero-background"></div>
+            <div class="hero-content">
+                <h1 class="hero-title">Kahve yolculuğunuz<br>burada başlıyor</h1>
+                <p class="hero-subtitle">Dünya çapında en özel kahveleri keşfedin, günlük tüketiminizi takip edin ve sağlıklı alışkanlıklar edinin.</p>
+                <button class="hero-cta" onclick="startApp()">
+                    <span>Uygulamayı Başlat</span>
+                    <span>→</span>
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <div class="topbar">
+            <button class="back-btn" onclick="backToLanding()">←</button>
+            <div class="logo">Roast</div>
+            <div style="width:40px"></div>
+        </div>
+
+        <!-- Home Page -->
+        <div class="page home-page active">
+            <div class="container">
+                <div class="daily-summary">
+                    <div class="date-selector">
+                        <button class="date-btn" onclick="changeDate(-1)">‹</button>
+                        <div class="current-date" id="currentDate">Bugün</div>
+                        <button class="date-btn" onclick="changeDate(1)">›</button>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Kahve</div>
+                            <div><span class="stat-value" id="todayCups">0</span><span class="stat-unit">fincan</span></div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Kafein</div>
+                            <div><span class="stat-value" id="todayCaffeine">0</span><span class="stat-unit">mg</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="quick-add">
+                    <h3>Hızlı Ekle</h3>
+                    <div class="coffee-types">
+                        <button class="coffee-btn" onclick="addCoffee('espresso', 80)">
+                            <div class="coffee-icon">☕</div>
+                            <div class="coffee-name-btn">Espresso</div>
+                            <div class="coffee-caffeine">80mg kafein</div>
+                        </button>
+                        <button class="coffee-btn" onclick="addCoffee('americano', 120)">
+                            <div class="coffee-icon">☕</div>
+                            <div class="coffee-name-btn">Americano</div>
+                            <div class="coffee-caffeine">120mg kafein</div>
+                        </button>
+                        <button class="coffee-btn" onclick="addCoffee('latte', 75)">
+                            <div class="coffee-icon">🥛</div>
+                            <div class="coffee-name-btn">Latte</div>
+                            <div class="coffee-caffeine">75mg kafein</div>
+                        </button>
+                        <button class="coffee-btn" onclick="addCoffee('cappuccino', 75)">
+                            <div class="coffee-icon">☕</div>
+                            <div class="coffee-name-btn">Cappuccino</div>
+                            <div class="coffee-caffeine">75mg kafein</div>
+                        </button>
+                        <button class="coffee-btn" onclick="addCoffee('turkish', 65)">
+                            <div class="coffee-icon">☕</div>
+                            <div class="coffee-name-btn">Türk Kahvesi</div>
+                            <div class="coffee-caffeine">65mg kafein</div>
+                        </button>
+                        <button class="coffee-btn" onclick="addCoffee('filter', 95)">
+                            <div class="coffee-icon">☕</div>
+                            <div class="coffee-name-btn">Filtre Kahve</div>
+                            <div class="coffee-caffeine">95mg kafein</div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="todays-log">
+                    <h3>Bugünün Kaydı</h3>
+                    <div id="todaysLog">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">☕</div>
+                            <div>Henüz kahve eklemediniz</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Discover Page -->
+        <div class="page discover-page">
+            <div class="container">
+                <div class="search-bar">
+                    <span>🔍</span>
+                    <input type="text" placeholder="Kahve ara..." id="searchInput" oninput="filterCoffees()">
+                </div>
+
+                <div class="filter-tags">
+                    <div class="filter-tag active" onclick="filterByOrigin('all')">Tümü</div>
+                    <div class="filter-tag" onclick="filterByOrigin('africa')">Afrika</div>
+                    <div class="filter-tag" onclick="filterByOrigin('america')">Amerika</div>
+                    <div class="filter-tag" onclick="filterByOrigin('asia')">Asya</div>
+                </div>
+
+                <div class="coffee-grid" id="coffeeGrid"></div>
+            </div>
+        </div>
+
+        <!-- Stats Page -->
+        <div class="page stats-page">
+            <div class="container">
+                <div class="week-chart">
+                    <h3 class="chart-title">Bu Hafta</h3>
+                    <div class="chart-bars" id="weekChart"></div>
+                </div>
+
+                <div class="quick-add">
+                    <h3>İstatistikler</h3>
+                    <div id="statsInfo"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="tab-bar">
+            <div class="tab-item active" onclick="switchTab('home')">
+                <div class="tab-icon">🏠</div>
+                <div>Ana Sayfa</div>
+            </div>
+            <div class="tab-item" onclick="switchTab('discover')">
+                <div class="tab-icon">☕</div>
+                <div>Keşfet</div>
+            </div>
+            <div class="tab-item" onclick="switchTab('stats')">
+                <div class="tab-icon">📊</div>
+                <div>İstatistik</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Coffee Detail Modal -->
+    <div class="modal" id="coffeeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle" style="font-family: var(--font-display); font-size: 24px;"></h2>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // Coffee Database
+        const coffeeDatabase = [
+            {
+                id: 1,
+                name: "Etiyopya Yirgacheffe",
+                origin: "Gedeo Bölgesi, Etiyopya",
+                region: "africa",
+                price: 245,
+                rating: 4.8,
+                caffeine: 85,
+                icon: "☕",
+                description: "Yirgacheffe, Etiyopya'nın en ünlü kahve bölgelerinden biridir. Çiçeksi ve meyve notalarıyla tanınır.",
+                flavorNotes: ["Çiçek", "Bergamot", "Limon", "Çay"],
+                roastLevel: "Açık Kavurma",
+                brewMethods: [
+                    { name: "Pour Over", description: "93°C su, 15g kahve, 3 dakika" },
+                    { name: "French Press", description: "95°C su, 4 dakika demleme" }
+                ]
+            },
+            {
+                id: 2,
+                name: "Kolombiya Supremo",
+                origin: "Huila, Kolombiya",
+                region: "america",
+                price: 220,
+                rating: 4.7,
+                caffeine: 110,
+                icon: "☕",
+                description: "Kolombiya'nın en kaliteli kahvelerinden. Dengeli ve yumuşak bir tat profili sunar.",
+                flavorNotes: ["Karamel", "Fındık", "Çikolata", "Turunç"],
+                roastLevel: "Orta Kavurma",
+                brewMethods: [
+                    { name: "Espresso", description: "25-30 saniye, 18g kahve" },
+                    { name: "Aeropress", description: "2 dakika, orta öğütme" }
+                ]
+            },
+            {
+                id: 3,
+                name: "Guatemala Antigua",
+                origin: "Antigua, Guatemala",
+                region: "america",
+                price: 260,
+                rating: 4.9,
+                caffeine: 95,
+                icon: "☕",
+                description: "Volkanik topraklarda yetişen, zengin ve karmaşık tat profiline sahip kahve.",
+                flavorNotes: ["Kakao", "Baharat", "Duman", "Kuru Meyve"],
+                roastLevel: "Orta-Koyu Kavurma",
+                brewMethods: [
+                    { name: "Moka Pot", description: "Orta ateş, 5 dakika" },
+                    { name: "Cold Brew", description: "12-24 saat soğuk demleme" }
+                ]
+            },
+            {
+                id: 4,
+                name: "Kenya AA",
+                origin: "Nyeri, Kenya",
+                region: "africa",
+                price: 280,
+                rating: 4.6,
+                caffeine: 105,
+                icon: "☕",
+                description: "Kenya'nın en kaliteli kahve sınıfı. Parlak asitlik ve kompleks meyve notları.",
+                flavorNotes: ["Siyah Frenk Üzümü", "Greyfurt", "Kırmızı Meyve", "Şarap"],
+                roastLevel: "Açık-Orta Kavurma",
+                brewMethods: [
+                    { name: "V60", description: "91°C su, pulse pouring tekniği" },
+                    { name: "Chemex", description: "4 dakika, orta-ince öğütme" }
+                ]
+            },
+            {
+                id: 5,
+                name: "Sumatra Mandheling",
+                origin: "Aceh, Endonezya",
+                region: "asia",
+                price: 235,
+                rating: 4.5,
+                caffeine: 115,
+                icon: "☕",
+                description: "Asya kahvelerinin karakteristiği olan toprak ve baharatlı notalar.",
+                flavorNotes: ["Toprak", "Baharat", "Hardal", "Tütün"],
+                roastLevel: "Koyu Kavurma",
+                brewMethods: [
+                    { name: "French Press", description: "96°C su, 5 dakika" },
+                    { name: "Ibrik", description: "Geleneksel yöntem" }
+                ]
+            },
+            {
+                id: 6,
+                name: "Costa Rica Tarrazu",
+                origin: "Tarrazu, Kosta Rika",
+                region: "america",
+                price: 250,
+                rating: 4.7,
+                caffeine: 90,
+                icon: "☕",
+                description: "Dengeli asitlik ve temiz tat profili ile ünlü Central American kahvesi.",
+                flavorNotes: ["Bal", "Elma", "Vanilya", "Kakao"],
+                roastLevel: "Orta Kavurma",
+                brewMethods: [
+                    { name: "Drip Coffee", description: "Filtre kahve makinesi" },
+                    { name: "Kalita Wave", description: "Flat bottom brewing" }
+                ]
+            },
+            {
+                id: 7,
+                name: "Brazil Santos",
+                origin: "São Paulo, Brezilya",
+                region: "america",
+                price: 195,
+                rating: 4.4,
+                caffeine: 100,
+                icon: "☕",
+                description: "Klasik Brezilya kahvesi. Yumuşak, tatlı ve düşük asitli.",
+                flavorNotes: ["Çikolata", "Fındık", "Karamel", "Şeker"],
+                roastLevel: "Orta Kavurma",
+                brewMethods: [
+                    { name: "Espresso", description: "Klasik İtalyan tarzı" },
+                    { name: "Turkish", description: "Türk kahvesi yöntemi" }
+                ]
+            },
+            {
+                id: 8,
+                name: "Vietnam Robusta",
+                origin: "Dak Lak, Vietnam",
+                region: "asia",
+                price: 180,
+                rating: 4.2,
+                caffeine: 150,
+                icon: "☕",
+                description: "Yüksek kafein içeriği ve güçlü tadıyla bilinen robusta çeşidi.",
+                flavorNotes: ["Çikolata", "Hardal", "Güçlü", "Toprak"],
+                roastLevel: "Koyu Kavurma",
+                brewMethods: [
+                    { name: "Vietnamese Phin", description: "Geleneksel Vietnam yöntemi" },
+                    { name: "Cold Brew", description: "Yoğun soğuk kahve" }
+                ]
+            }
+        ];
+
+        // State
+        let data = { entries: [], settings: { dailyGoal: 3, maxCaffeine: 400 } };
+        let currentDate = new Date();
+        let currentFilter = 'all';
+        const coffeeNames = { espresso: 'Espresso', americano: 'Americano', latte: 'Latte', cappuccino: 'Cappuccino', turkish: 'Türk Kahvesi', filter: 'Filtre Kahve' };
+
+        // Initialize
+        window.addEventListener('load', () => {
+            if (localStorage.getItem('roastHasUsedApp') === 'true') startApp();
+        });
+
+        function startApp() {
+            document.querySelector('.landing-page').classList.add('hidden');
+            document.querySelector('.app-container').classList.add('active');
+            document.querySelector('.tab-bar').classList.add('active');
+            localStorage.setItem('roastHasUsedApp', 'true');
+            init();
+        }
+
+        function backToLanding() {
+            document.querySelector('.landing-page').classList.remove('hidden');
+            document.querySelector('.app-container').classList.remove('active');
+            document.querySelector('.tab-bar').classList.remove('active');
+        }
+
+        function init() {
+            const saved = localStorage.getItem('roastData');
+            if (saved) data = JSON.parse(saved);
+            updateDisplay();
+            renderCoffeeGrid();
+        }
+
+        // Tracking Functions
+        function addCoffee(type, caffeine) {
+            data.entries.push({
+                id: Date.now(),
+                type: type,
+                caffeine: caffeine,
+                timestamp: new Date().toISOString(),
+                date: formatDate(currentDate)
+            });
+            localStorage.setItem('roastData', JSON.stringify(data));
+            updateDisplay();
+            event.target.closest('.coffee-btn').style.transform = 'scale(0.9)';
+            setTimeout(() => event.target.closest('.coffee-btn').style.transform = 'scale(1)', 100);
+        }
+
+        function deleteEntry(id) {
+            data.entries = data.entries.filter(e => e.id !== id);
+            localStorage.setItem('roastData', JSON.stringify(data));
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            const entries = data.entries.filter(e => e.date === formatDate(currentDate));
+            document.getElementById('todayCups').textContent = entries.length;
+            document.getElementById('todayCaffeine').textContent = entries.reduce((sum, e) => sum + e.caffeine, 0);
+            
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            const current = new Date(currentDate);
+            current.setHours(0,0,0,0);
+            const diff = Math.floor((today - current) / 86400000);
+            document.getElementById('currentDate').textContent = diff === 0 ? 'Bugün' : diff === 1 ? 'Dün' : diff === -1 ? 'Yarın' : formatDateLong(currentDate);
+            
+            const logEl = document.getElementById('todaysLog');
+            if (entries.length === 0) {
+                logEl.innerHTML = '<div class="empty-state"><div class="empty-state-icon">☕</div><div>Henüz kahve eklemediniz</div></div>';
+            } else {
+                logEl.innerHTML = entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).map(e => `
+                    <div class="log-entry">
+                        <div class="log-time">${new Date(e.timestamp).toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'})}</div>
+                        <div class="log-details">
+                            <div class="log-coffee-name">${coffeeNames[e.type]}</div>
+                            <div class="log-caffeine">${e.caffeine}mg kafein</div>
+                        </div>
+                        <button class="delete-btn" onclick="deleteEntry(${e.id})">×</button>
+                    </div>
+                `).join('');
+            }
+            
+            updateStats();
+        }
+
+        function changeDate(delta) {
+            currentDate.setDate(currentDate.getDate() + delta);
+            updateDisplay();
+        }
+
+        // Discover Functions
+        function renderCoffeeGrid() {
+            const grid = document.getElementById('coffeeGrid');
+            const filtered = coffeeDatabase.filter(c => 
+                (currentFilter === 'all' || c.region === currentFilter)
+            );
+            
+            grid.innerHTML = filtered.map(coffee => `
+                <div class="coffee-card coffee-card-horizontal" onclick="showCoffeeDetail(${coffee.id})">
+                    <div class="coffee-image-small">${coffee.icon}</div>
+                    <div class="coffee-info">
+                        <div>
+                            <div class="coffee-header">
+                                <div>
+                                    <div class="coffee-name">${coffee.name}</div>
+                                    <div class="coffee-origin">${coffee.origin}</div>
+                                </div>
+                                <div class="coffee-price">₺${coffee.price}</div>
+                            </div>
+                            <div class="coffee-tags">
+                                <span class="coffee-tag">${coffee.caffeine}mg kafein</span>
+                                <span class="coffee-tag">${coffee.roastLevel}</span>
+                            </div>
+                        </div>
+                        <div class="coffee-rating">★★★★★ ${coffee.rating}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterByOrigin(region) {
+            currentFilter = region;
+            document.querySelectorAll('.filter-tag').forEach(tag => tag.classList.remove('active'));
+            event.target.classList.add('active');
+            renderCoffeeGrid();
+        }
+
+        function filterCoffees() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const grid = document.getElementById('coffeeGrid');
+            const filtered = coffeeDatabase.filter(c => 
+                (currentFilter === 'all' || c.region === currentFilter) &&
+                (c.name.toLowerCase().includes(search) || c.origin.toLowerCase().includes(search))
+            );
+            
+            grid.innerHTML = filtered.map(coffee => `
+                <div class="coffee-card coffee-card-horizontal" onclick="showCoffeeDetail(${coffee.id})">
+                    <div class="coffee-image-small">${coffee.icon}</div>
+                    <div class="coffee-info">
+                        <div>
+                            <div class="coffee-header">
+                                <div>
+                                    <div class="coffee-name">${coffee.name}</div>
+                                    <div class="coffee-origin">${coffee.origin}</div>
+                                </div>
+                                <div class="coffee-price">₺${coffee.price}</div>
+                            </div>
+                            <div class="coffee-tags">
+                                <span class="coffee-tag">${coffee.caffeine}mg kafein</span>
+                                <span class="coffee-tag">${coffee.roastLevel}</span>
+                            </div>
+                        </div>
+                        <div class="coffee-rating">★★★★★ ${coffee.rating}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showCoffeeDetail(id) {
+            const coffee = coffeeDatabase.find(c => c.id === id);
+            document.getElementById('modalTitle').textContent = coffee.name;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="coffee-detail-image">${coffee.icon}</div>
+                
+                <div class="detail-section">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <div>
+                            <div style="color: #757575; font-size: 14px; margin-bottom: 4px;">${coffee.origin}</div>
+                            <div class="coffee-rating">★★★★★ ${coffee.rating}</div>
+                        </div>
+                        <div class="coffee-price">₺${coffee.price}</div>
+                    </div>
+                    <p>${coffee.description}</p>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Tat Notları</h3>
+                    <div class="flavor-notes">
+                        ${coffee.flavorNotes.map(note => `<span class="flavor-note">${note}</span>`).join('')}
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Kahve Bilgileri</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                        <div class="brew-method">
+                            <h4>Kafein</h4>
+                            <p>${coffee.caffeine}mg / fincan</p>
+                        </div>
+                        <div class="brew-method">
+                            <h4>Kavurma</h4>
+                            <p>${coffee.roastLevel}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h3>Demleme Önerileri</h3>
+                    ${coffee.brewMethods.map(method => `
+                        <div class="brew-method">
+                            <h4>${method.name}</h4>
+                            <p>${method.description}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            document.getElementById('coffeeModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('coffeeModal').classList.remove('active');
+        }
+
+        // Stats Functions
+        function updateStats() {
+            const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+            const today = new Date();
+            const weekData = [];
+
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = formatDate(date);
+                const entries = data.entries.filter(e => e.date === dateStr);
+                weekData.push({ day: days[date.getDay()], cups: entries.length });
+            }
+
+            const maxCups = Math.max(...weekData.map(d => d.cups), 1);
+            document.getElementById('weekChart').innerHTML = weekData.map(d => `
+                <div class="chart-bar-wrapper">
+                    <div class="chart-bar" style="height: ${(d.cups / maxCups) * 100}%">
+                        ${d.cups > 0 ? `<div class="chart-bar-value">${d.cups}</div>` : ''}
+                    </div>
+                    <div class="chart-bar-label">${d.day}</div>
+                </div>
+            `).join('');
+
+            const totalEntries = data.entries.length;
+            const avgPerDay = totalEntries > 0 ? (totalEntries / 7).toFixed(1) : 0;
+            const totalCaffeine = data.entries.reduce((sum, e) => sum + e.caffeine, 0);
+            
+            document.getElementById('statsInfo').innerHTML = `
+                <div style="padding: 16px; background: var(--color-latte); border-radius: 12px; margin-bottom: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">Günlük Ortalama</div>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--color-espresso);">${avgPerDay} fincan</div>
+                </div>
+                <div style="padding: 16px; background: var(--color-latte); border-radius: 12px; margin-bottom: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">Toplam Kahve</div>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--color-espresso);">${totalEntries} fincan</div>
+                </div>
+                <div style="padding: 16px; background: var(--color-latte); border-radius: 12px;">
+                    <div style="font-weight: 600; margin-bottom: 4px;">Toplam Kafein</div>
+                    <div style="font-size: 24px; font-weight: 700; color: var(--color-espresso);">${totalCaffeine}mg</div>
+                </div>
+            `;
+        }
+
+        // Navigation
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+            event.target.closest('.tab-item').classList.add('active');
+            
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelector(`.${tab}-page`).classList.add('active');
+            
+            if (tab === 'discover') renderCoffeeGrid();
+            if (tab === 'stats') updateStats();
+        }
+
+        // Utilities
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        function formatDateLong(date) {
+            const months = ['Oca', 'Şub', 'Mar', 'Nis', 'May', 'Haz', 'Tem', 'Ağu', 'Eyl', 'Eki', 'Kas', 'Ara'];
+            return `${date.getDate()} ${months[date.getMonth()]}`;
+        }
+
+        // Close modal on outside click
+        document.getElementById('coffeeModal').addEventListener('click', (e) => {
+            if (e.target.id === 'coffeeModal') closeModal();
+        });
+    </script>
+</body>
+</html>
